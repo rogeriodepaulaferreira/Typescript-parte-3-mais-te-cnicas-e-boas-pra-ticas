@@ -17,3 +17,4 @@ export function executionTime(seg = false) {
         return descriptor;
     };
 }
+//# sourceMappingURL=execution-time.js.map

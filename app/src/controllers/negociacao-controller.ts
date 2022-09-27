@@ -2,11 +2,12 @@ import { domInject } from '../decorators/dom-inject.js';
 import { executionTime } from '../decorators/execution-time.js';
 import { inspect } from '../decorators/inspect.js';
 import { DiasDaSemana } from '../enums/dias-da-semana.js';
-import { htmlTratamento } from '../models/html-tratamento.js';
 import { Negociacao } from '../models/negociacao.js';
 import { Negociacoes } from '../models/negociacoes.js';
+import { NegociacaoService } from '../services/negociacao-service.js';
 import { MensagemView } from '../views/mensagem-views.js';
 import { NegociacoesView } from '../views/negociacoes-view.js';
+import { Print } from '../utils/print.js'
 
 export class NegociacaoController {
     @domInject('#data')
@@ -19,6 +20,8 @@ export class NegociacaoController {
     private negociacoes = new Negociacoes();
     private negociacoesView = new NegociacoesView('#negociacoesView');
     private mensagemView = new MensagemView('#mensagemView');
+
+    private service = new NegociacaoService();
 
     constructor() {
         this.negociacoesView.update(this.negociacoes,'');
@@ -36,10 +39,33 @@ export class NegociacaoController {
         }
   
         this.negociacoes.adiciona(negociacao); 
+
+        Print(negociacao, this.negociacoes);
+
         this.limparFormulario(); 
         this.atualizaView();
           
         
+    }
+
+    importData():void{
+        //Service que recupera os dados
+        this.service.getNegociacao()
+        //Realizando um filtro antes da interação
+        .then(negociacoes => {
+            return negociacoes.filter(negociacoes => {
+                return !this.negociacoes.lista().
+                some(negociacao => negociacao.equals(negociacoes))
+            })
+        })
+       //Faz um for para adicionar cada item da lista na nossa grid
+       .then(negociacoes => {
+        for(let negociacao of negociacoes){ 
+            this.negociacoes.adiciona(negociacao);
+        }
+        //Atualiza a view e manda as negociacoes
+        this.negociacoesView.update(this.negociacoes);
+    })
     }
 
     private limparFormulario(): void {

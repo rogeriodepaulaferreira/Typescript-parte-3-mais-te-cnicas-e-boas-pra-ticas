@@ -12,3 +12,4 @@ export class htmlTratamento {
         throw Error('Seletor HTML inválido');
     }
 }
+//# sourceMappingURL=html-tratamento.js.map
